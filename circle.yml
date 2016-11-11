@@ -1,0 +1,19 @@
+
+dependencies:
+  pre: 
+   - sudo service docker start; sudo service docker status; sudo docker -v; sudo docker info; 
+   
+  post:
+   - sudo docker build -t=centos-apache .
+   - sudo docker run --name centos-apache -d centos-apache
+   - sudo docker save -o $CIRCLE_ARTIFACTS/centos-apache.tar centos-apache
+
+deployment:
+  dockerhub:
+    branch: master
+    commands:
+      - $DOCKER_HUB_TRIGGER
+      
+test:
+  override:
+  - docker images | grep centos-apache 
